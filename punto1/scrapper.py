@@ -21,9 +21,6 @@ def scrapping(fullPath,fileName,newspaper,soup,s3):
     """
     csvFile = open('/tmp/'+fileName+'.csv', 'w',encoding='utf-8')
     writer = csv.writer(csvFile,dialect='unix')
-    row=['title','section','url']
-    writer.writerow(row)
-
     if(newspaper=="El_tiempo"):
         articles=soup.find_all('article')
         for article in articles:
