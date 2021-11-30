@@ -32,6 +32,8 @@ def scrapping(fullPath,fileName,newspaper,soup,s3):
             if(category_anchor and title_anchor):
                 category=category_anchor.getText()
                 title=title_anchor.getText()
+                if("," in title):
+                    title=title.replace(",","")
                 url='https://www.eltiempo.com'+title_anchor.get('href')
                 row=[title,category,url]
                 writer.writerow(row)
@@ -65,6 +67,8 @@ def scrapping(fullPath,fileName,newspaper,soup,s3):
                                 anchor=news.find_all('a')[0]
                                 url = "https://www.publimetro.co"+anchor.get('href')
                                 title= anchor.get('title')
+                                if("," in title):
+                                    title=title.replace(",","")
                                 row=[title,section,url]
                                 writer.writerow(row)
                         else:
@@ -82,6 +86,8 @@ def scrapping(fullPath,fileName,newspaper,soup,s3):
                                             else:
                                                 url = anchor.get('href')
                                             title = anchor.getText()
+                                            if("," in title):
+                                                title=title.replace(",","")
                                             row=[title,section,url]
                                             writer.writerow(row)
     csvFile.close()
