@@ -1,18 +1,37 @@
-from pyspark import SparkContext
-from pyspark.streaming import StreamingContext
-
+from pyspark.sql import SparkSession
+import pyspark.sql.functions as f
+def entrega():
+    print("¡Entrego!")
+spark = SparkSession \
+    .builder \
+    .appName("StructuredNetworkWordCount") \
+    .getOrCreate()
+#from pyspark.streaming.kafka import KafkaUtils
 # local debe establecerse en 2
-sc = SparkContext("local[2]", "NetworkWordCount")
-ssc = StreamingContext(sc, 10)
 
-lines = ssc.socketTextStream("localhost", 9898)
+lines = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers","localhost:9092") \
+    .option("subscribe","quickstart-events") \
+    .option("batchDuration","10")\
+    .load()
+df=lines.withColumn("Price", f.conv(f.col("value"), 16, 16).cast("bigint"))
+#lines=KafkaUtils.createDirectStream(ssc,topics=['quickstart-events'],kafkaParams={'metadata.broker.list':'localhost:9092'})
+#lines = ssc.socketTextStream("localhost", 9898)
 
-words = lines.flatMap(lambda line: line.split(" "))
+df2 = df.select("Price")
+dfPrice=df2.select(f.min("Price").alias("minPrice"),
+                    f.max("Price").alias("maxPrice"),
+                    f.avg("Price").alias("mean"),
+                    #f.element_at('Price',-1).cast('bigint').alias("current"),
+                    f.stddev("Price").alias('deviation'))#.withColumn("alert1",f.col("current")>2*f.col('deviation')+f.col('mean'))
 
-pairs = words.map(lambda word: (word, 1))
-wordCounts = pairs.reduceByKey(lambda x, y: x + y)
+query = dfPrice \
+    .writeStream \
+    .foreach(entrega)\
+    .outputMode("complete") \
+    .format("console") \
+    .start()
 
-wordCounts.pprint()
-
-ssc.start()
-ssc.awaitTermination()
+query.awaitTermination()
