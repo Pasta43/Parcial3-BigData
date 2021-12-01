@@ -23,4 +23,4 @@ To install the requirements:
 pip install -r requirements.txt
 ```
 
-It is mandatory keep runing a kafka server, zookeeper and create a topic for subscribe both programs. 
+It is mandatory keep running a kafka server, zookeeper and create a topic for subscribe both programs. 
