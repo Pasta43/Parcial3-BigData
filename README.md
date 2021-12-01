@@ -24,3 +24,17 @@ pip install -r requirements.txt
 ```
 
 It is mandatory keep running a kafka server, zookeeper and create a topic for subscribe both programs. 
+
+
+For execute producer
+
+```
+python producer.py
+```
+
+and consumer
+
+```
+
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.0 consumer.py
+```
