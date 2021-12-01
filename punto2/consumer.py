@@ -6,8 +6,6 @@ spark = SparkSession \
     .builder \
     .appName("StructuredNetworkWordCount") \
     .getOrCreate()
-#from pyspark.streaming.kafka import KafkaUtils
-# local debe establecerse en 2
 
 lines = spark \
     .readStream \
